@@ -63,7 +63,7 @@ const Profile = () => {
         <div className="text-center mb-24">
           <div className="inline-block w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600 mb-8 shadow-2xl">
             <img 
-              src={portfolio.profileImage || '/api/placeholder/128/128'} 
+              src={portfolio.profileImage || '/src/assets/pro.png'} 
               alt={portfolio.fullName} 
               className="w-full h-full object-cover"
             />
@@ -73,13 +73,13 @@ const Profile = () => {
           </h1>
           <p className="text-2xl font-semibold text-gray-600 mb-2">{portfolio.title}</p>
           <div className="flex flex-wrap justify-center gap-4 text-lg text-gray-500 mb-12">
-            {portfolio.github && (
-              <Link to={portfolio.github} className="flex items-center gap-2 hover:text-indigo-600 transition-colors">
+            {portfolio.contact?.github && (
+              <Link to={portfolio.contact.github} className="flex items-center gap-2 hover:text-indigo-600 transition-colors">
                 GitHub
               </Link>
             )}
-            {portfolio.linkedin && (
-              <Link to={portfolio.linkedin} className="flex items-center gap-2 hover:text-blue-600 transition-colors">
+            {portfolio.contact?.linkedin && (
+              <Link to={portfolio.contact.linkedin} className="flex items-center gap-2 hover:text-blue-600 transition-colors">
                 LinkedIn
               </Link>
             )}
@@ -95,11 +95,11 @@ const Profile = () => {
               to="/register"
               className="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl hover:from-indigo-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transition-all h-16 flex items-center justify-center"
             >
-              Hire {portfolio.fullName.split(' ')[0]}
+Hire {portfolio.fullName ? portfolio.fullName.split(' ')[0] || 'Developer' : 'Developer'}
             </Link>
-            {portfolio.github && (
+            {portfolio.contact?.github && (
               <Link
-                to={portfolio.github}
+                to={portfolio.contact.github}
                 className="px-8 py-4 border-2 border-gray-200 text-gray-900 font-semibold rounded-2xl hover:border-indigo-300 hover:bg-indigo-50 shadow-lg hover:shadow-xl transition-all h-16 flex items-center justify-center"
               >
                 View GitHub
@@ -117,7 +117,7 @@ const Profile = () => {
                 About
               </h2>
               <p className="text-xl text-gray-700 leading-relaxed">
-                {portfolio.bio || `${portfolio.fullName} is a passionate developer creating amazing things with code.`}
+{portfolio.bio || `${portfolio.fullName || 'Developer'} is a passionate developer creating amazing things with code.`}
               </p>
             </div>
 
@@ -240,7 +240,7 @@ const Profile = () => {
               <Code className="w-24 h-24 text-gray-300 mx-auto mb-8" />
               <h3 className="text-3xl font-bold text-gray-900 mb-4">No projects yet</h3>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {portfolio.fullName} is working on some amazing projects. Check back soon!
+{portfolio.fullName || 'Developer'} is working on some amazing projects. Check back soon!
               </p>
             </div>
           )}
