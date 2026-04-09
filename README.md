@@ -97,7 +97,7 @@ npm run dev # http://localhost:5173
 ```
 
 ## 🚀 Deployment
-- **Frontend**: Vercel/Netlify
+- **Frontend**: https://69d71bc4b18e3788ad55d4cb--majestic-macaron-4e9f5d.netlify.app/
 - **Backend**: Render/Railway
 - **Database**: MongoDB Atlas
 
