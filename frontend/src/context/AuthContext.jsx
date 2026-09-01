@@ -39,11 +39,18 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
   };
 
+  const clearSession = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+    setToken(null);
+  };
+
   const value = {
     user,
     token,
     login,
-    logout,
+    logout: clearSession,
     loading
   };
 

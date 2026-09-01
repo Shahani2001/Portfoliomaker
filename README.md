@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 🎯 Overview
-Full-stack MERN application for developers to create, preview, edit, and publish professional portfolio websites. Features public shareable URLs (`/:username`), dynamic forms for skills/projects/experience, JWT auth, and responsive Tailwind UI.
+Full-stack MERN application for developers to create, preview, edit, and publish professional portfolio websites. Features public shareable URLs (`/portfolio/:username`), dynamic forms for skills/projects/experience, JWT auth, and responsive Tailwind UI.
 
 **Tech Stack:**
 - **Frontend**: React 19 + Vite + React Router + TanStack Query + React Hook Form + Tailwind CSS + Lucide React

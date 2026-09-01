@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { User, LogOut, Settings } from 'lucide-react';
+import { User, LogOut, Settings, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const Navbar = () => {
+const Navbar = ({ theme, toggleTheme }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,6 +22,16 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center space-x-4">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white/80 px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900/70 dark:text-gray-200 dark:hover:bg-gray-800"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === 'dark' ? 'Light' : 'Dark'}
+            </button>
+
             <Link
               to="/"
               className={`px-3 py-2 rounded-lg font-medium transition-all ${
@@ -46,9 +56,9 @@ const Navbar = () => {
                   Dashboard
                 </Link>
                 <Link
-                  to={`/${user.username}`}
+                  to={`/portfolio/${user.username}`}
                   className={`px-3 py-2 rounded-lg font-medium transition-all ${
-                    location.pathname === `/${user.username}` 
+                    location.pathname === `/portfolio/${user.username}` 
                       ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-400' 
                       : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800/50'
                   }`}
@@ -87,6 +97,14 @@ const Navbar = () => {
 
           <div className="md:hidden flex items-center space-x-2">
             <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/50"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/50"
             >
@@ -95,7 +113,7 @@ const Navbar = () => {
               </svg>
             </button>
             {user && (
-              <Link to={`/${user.username}`} className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+              <Link to={`/portfolio/${user.username}`} className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
                 <User className="w-5 h-5 text-white" />
               </Link>
             )}
@@ -104,6 +122,17 @@ const Navbar = () => {
 
         {isMenuOpen && (
           <div className="md:hidden pb-4 space-y-2">
+            <button
+              type="button"
+              onClick={() => {
+                toggleTheme();
+                setIsMenuOpen(false);
+              }}
+              className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-left text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+            >
+              <span>{theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}</span>
+              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
             <Link to="/" className="block px-3 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800/50">
               Home
             </Link>
@@ -112,7 +141,7 @@ const Navbar = () => {
                 <Link to="/dashboard" className="block px-3 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800/50">
                   Dashboard
                 </Link>
-                <Link to={`/${user.username}`} className="block px-3 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800/50">
+                <Link to={`/portfolio/${user.username}`} className="block px-3 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800/50">
                   My Profile
                 </Link>
                 <button

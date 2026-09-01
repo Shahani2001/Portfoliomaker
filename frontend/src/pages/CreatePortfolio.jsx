@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Trash2, Eye, ArrowLeft } from 'lucide-react';
+import { Plus, Trash2, Eye, ArrowLeft, Users, Mail, Star, Code, Briefcase } from 'lucide-react';
 import ApiClient from '../utils/api';
 
 const CreatePortfolio = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-
+  const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, control, formState: { errors } } = useForm({
     defaultValues: {
+      username: user?.username || '',
       fullName: user?.fullName || '',
       title: '',
       bio: '',
@@ -39,10 +40,26 @@ const CreatePortfolio = () => {
     name: 'experience'
   });
 
-  const onSubmitPreview = (data) => {
-    // Store form data in sessionStorage for Preview page
-    sessionStorage.setItem('portfolioPreviewData', JSON.stringify(data));
-    navigate('/preview');
+  const onSubmitPreview = async (data) => {
+    try {
+      setLoading(true);
+      const parsedData = {
+        ...data,
+        projects: data.projects.map(project => ({
+          ...project,
+          techStack: typeof project.techStack === 'string' 
+            ? project.techStack.split(',').map(tech => tech.trim()).filter(tech => tech)
+            : project.techStack
+        }))
+      };
+      
+      sessionStorage.setItem('portfolioPreviewData', JSON.stringify(parsedData));
+      navigate('/preview');
+    } catch (error) {
+      console.error('Error preparing portfolio data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!user) {
@@ -76,6 +93,21 @@ const CreatePortfolio = () => {
                 <Users className="w-10 h-10 text-indigo-600" />
                 Personal Information
               </h2>
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Username * (URL-safe)</label>
+                <input
+                  {...register('username', { 
+                    required: 'Username is required',
+                    pattern: {
+                      value: /^[a-zA-Z0-9_-]+$/,
+                      message: 'Username can only contain letters, numbers, hyphens, and underscores'
+                    }
+                  })}
+                  className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all bg-white/50"
+                  placeholder="john-doe"
+                />
+                {errors.username && <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>}
+              </div>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
@@ -263,9 +295,9 @@ const CreatePortfolio = () => {
               </div>
             </section>
 
-            <Button type="submit" className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-6 px-8 rounded-3xl text-xl shadow-2xl hover:shadow-3xl transition-all flex items-center justify-center gap-3 mx-auto max-w-md">
+            <Button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-6 px-8 rounded-3xl text-xl shadow-2xl hover:shadow-3xl transition-all flex items-center justify-center gap-3 mx-auto max-w-md disabled:opacity-50 disabled:cursor-not-allowed">
               <Eye className="w-6 h-6" />
-              Preview & Publish
+              {loading ? 'Loading...' : 'Preview & Publish'}
             </Button>
           </form>
         </div>

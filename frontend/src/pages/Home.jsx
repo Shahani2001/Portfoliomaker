@@ -9,11 +9,11 @@ const Home = () => {
       <section className="text-center py-24">
         <div className="max-w-4xl mx-auto">
           
-          <h1 className="text-5xl color:black dark:text-black md:text-7xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent dark:from-white dark:to-gray-300 mb-6 leading-tight">
+          <h1 className="text-5xl text-gray-900 dark:text-white md:text-7xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent dark:from-white dark:to-gray-200 mb-6 leading-tight">
             Build Your <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Portfolio</span> in Minutes
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-900 max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-12 leading-relaxed">
             Showcase your skills, projects, and experience with beautiful, professional portfolio websites. No design skills required.
           </p>
           
@@ -39,10 +39,10 @@ const Home = () => {
       <section>
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-24">
-            <h2 className="text-4xl color:black dark:text-black md:text-5xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent dark:from-white dark:to-gray-300 mb-6">
+            <h2 className="text-4xl text-gray-900 dark:text-white md:text-5xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent dark:from-white dark:to-gray-200 mb-6">
               Everything you need to impress
             </h2>
-            <p className="text-xl color:black max-w-2xl mx-auto">
+            <p className="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
               From clean designs to powerful features, we've got it all covered.
             </p>
           </div>
@@ -111,10 +111,10 @@ const Home = () => {
       {/* CTA Section */}
       <section className="text-center py-24">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-4xl color:black dark:text-black md:text-5xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent dark:from-white dark:to-gray-300 mb-6 ">
+          <h2 className="text-4xl text-gray-900 dark:text-white md:text-5xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent dark:from-white dark:to-gray-200 mb-6 ">
             Ready to showcase your work?
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-900 mb-12">
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-12">
             Join thousands of developers who use PortfolioMaker to create stunning professional portfolios.
           </p>
           <Link

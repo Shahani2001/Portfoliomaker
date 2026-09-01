@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const TOKEN_EXPIRES_IN = "24h";
-const JWT_SECRET = process.env.JWT_SECRET;
+const getJwtSecret = () => process.env.JWT_SECRET || "fallbacksecret";
 
 export async function register(req, res) {
     try {
@@ -89,7 +89,7 @@ export async function register(req, res) {
         });
         await newAuthUser.save();
 
-        const token = jwt.sign({ userId: newPortfolio._id }, JWT_SECRET || "fallbacksecret", { expiresIn: TOKEN_EXPIRES_IN });
+        const token = jwt.sign({ userId: newPortfolio._id }, getJwtSecret(), { expiresIn: TOKEN_EXPIRES_IN });
 
         return res.status(201).json({
             success: true,
@@ -144,7 +144,7 @@ export async function login(req, res) {
             });
         }
 
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET || "fallbacksecret", { expiresIn: TOKEN_EXPIRES_IN });
+        const token = jwt.sign({ userId: user._id }, getJwtSecret(), { expiresIn: TOKEN_EXPIRES_IN });
 
         return res.status(200).json({
             success: true,

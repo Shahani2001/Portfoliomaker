@@ -13,6 +13,14 @@ import CreatePortfolio from './pages/CreatePortfolio'
 import PreviewPortfolio from './pages/PreviewPortfolio'
 import EditPortfolio from './pages/EditPortfolio'
 
+const getInitialTheme = () => {
+  const savedTheme = localStorage.getItem('portfolio-theme')
+  if (savedTheme === 'dark' || savedTheme === 'light') {
+    return savedTheme
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -38,12 +46,23 @@ const ProtectedRoute = ({ children }) => {
 }
 
 function AppContent() {
+  const [theme, setTheme] = React.useState(getInitialTheme)
+
+  React.useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    localStorage.setItem('portfolio-theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
+  }
+
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-white">
+    <div className="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-slate-950 dark:text-white">
       <Router>
         <AuthProvider>
           <QueryClientProvider client={queryClient}>
-            <Navbar />
+            <Navbar theme={theme} toggleTheme={toggleTheme} />
             <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -57,7 +76,7 @@ function AppContent() {
                     </ProtectedRoute>
                   } 
                 />
-                <Route path="/:username" element={<Profile />} />
+                <Route path="/portfolio/:username" element={<Profile />} />
                 <Route path="/create" element={
                   <ProtectedRoute>
                     <CreatePortfolio />

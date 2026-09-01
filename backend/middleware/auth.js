@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import UserPortfolio from "../models/portfoliomodel.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 export default async function authMiddleware(req, res, next) {
-  if (!JWT_SECRET) {
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
     return res.status(500).json({
       success: false,
       message: "JWT secret is not configured",
@@ -22,7 +22,7 @@ export default async function authMiddleware(req, res, next) {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, jwtSecret);
     req.user = await UserPortfolio.findById(decoded.userId).select("-password");
     if (!req.user) {
         return res.status(401).json({

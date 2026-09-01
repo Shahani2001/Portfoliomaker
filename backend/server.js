@@ -24,6 +24,8 @@ process.on("uncaughtException", (error) => {
 const app = express();
 const port = process.env.PORT || 4000;
 
+console.log(`CORS_ORIGIN from env: ${process.env.CORS_ORIGIN}`);
+
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN || "*", // Allow all origins in development, restrict in production

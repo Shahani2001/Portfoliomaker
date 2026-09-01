@@ -15,11 +15,16 @@ const EditPortfolio = () => {
   const { token } = useAuth();
   const api = new ApiClient(token);
 
-  const { data: portfolio, isLoading, error } = useQuery({
+  const { data: portfolioData, isLoading, error } = useQuery({
     queryKey: ['portfolio', username],
-    queryFn: () => api.get(`/portfolio/${username}`),
+    queryFn: async () => {
+      const response = await api.get(`/portfolio/${username}`);
+      return response.portfolio || response;
+    },
     enabled: !!username && !!token,
   });
+
+  const portfolio = portfolioData;
 
   const { register, handleSubmit, control, formState: { errors, isSubmitting }, reset } = useForm();
 
@@ -48,7 +53,7 @@ const EditPortfolio = () => {
     try {
       await api.put(`/portfolio/${username}`, data);
       queryClient.invalidateQueries({ queryKey: ['portfolio', username] });
-      navigate(`/${username}`);
+      navigate(`/portfolio/${username}`);
     } catch (err) {
       console.error('Update failed', err);
     }
@@ -79,7 +84,7 @@ const EditPortfolio = () => {
     <div className="min-h-screen py-12 px-4 bg-gradient-to-br from-indigo-50 to-purple-50">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" onClick={() => navigate(`/${username}`)}>
+          <Button variant="ghost" onClick={() => navigate(`/portfolio/${username}`)}>
             <ArrowLeft className="w-5 h-5 mr-2" />
             View Live
           </Button>
@@ -100,20 +105,20 @@ const EditPortfolio = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
-                  <input {...register('fullName')} className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20" />
+                  <input {...register('fullName')} placeholder="Your full name" className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 text-gray-900" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Title</label>
-                  <input {...register('title')} className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20" />
+                  <input {...register('title')} placeholder="Your title" className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 text-gray-900" />
                 </div>
               </div>
               <div className="mt-6">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Bio</label>
-                <textarea {...register('bio')} rows={4} className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20" />
+                <textarea {...register('bio')} rows={4} placeholder="Tell us about yourself" className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 text-gray-900" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Profile Image URL</label>
-                <input {...register('profileImage')} className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20" />
+                <input {...register('profileImage')} placeholder="https://example.com/image.jpg" className="w-full p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 text-gray-900" />
               </div>
             </section>
 
@@ -123,19 +128,19 @@ const EditPortfolio = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                  <input {...register('contact.email')} className="w-full p-4 border border-gray-200 rounded-2xl" />
+                  <input {...register('contact.email')} placeholder="your@email.com" className="w-full p-4 border border-gray-200 rounded-2xl text-gray-900" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">LinkedIn</label>
-                  <input {...register('contact.linkedin')} className="w-full p-4 border border-gray-200 rounded-2xl" />
+                  <input {...register('contact.linkedin')} placeholder="linkedin.com/in/yourprofile" className="w-full p-4 border border-gray-200 rounded-2xl text-gray-900" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">GitHub</label>
-                  <input {...register('contact.github')} className="w-full p-4 border border-gray-200 rounded-2xl" />
+                  <input {...register('contact.github')} placeholder="github.com/yourprofile" className="w-full p-4 border border-gray-200 rounded-2xl text-gray-900" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Website</label>
-                  <input {...register('contact.website')} className="w-full p-4 border border-gray-200 rounded-2xl" />
+                  <input {...register('contact.website')} placeholder="https://yourwebsite.com" className="w-full p-4 border border-gray-200 rounded-2xl text-gray-900" />
                 </div>
               </div>
             </section>
@@ -148,7 +153,8 @@ const EditPortfolio = () => {
                   <div key={field.id} className="flex gap-3 items-end">
                     <input
                       {...register(`skills.${index}`)}
-                      className="flex-1 p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-amber-500/20"
+                      placeholder="Enter skill"
+                      className="flex-1 p-4 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-amber-500/20 text-gray-900"
                     />
                     <Button type="button" variant="outline" onClick={() => removeSkill(index)}>
                       <Trash2 className="w-4 h-4" />
@@ -167,13 +173,13 @@ const EditPortfolio = () => {
               <div className="space-y-4">
                 {projectsFields.map((field, index) => (
                   <div key={field.id} className="border p-6 rounded-2xl bg-gray-50 space-y-4">
-                    <input {...register(`projects.${index}.name`)} placeholder="Name" className="w-full p-4 border rounded-xl" />
-                    <textarea {...register(`projects.${index}.description`)} rows={2} placeholder="Description" className="w-full p-4 border rounded-xl" />
+                    <input {...register(`projects.${index}.name`)} placeholder="Project name" className="w-full p-4 border rounded-xl text-gray-900" />
+                    <textarea {...register(`projects.${index}.description`)} rows={2} placeholder="Project description" className="w-full p-4 border rounded-xl text-gray-900" />
                     <div className="grid md:grid-cols-2 gap-4">
-                      <input {...register(`projects.${index}.githubLink`)} placeholder="GitHub" className="w-full p-4 border rounded-xl" />
-                      <input {...register(`projects.${index}.liveDemo`)} placeholder="Live Demo" className="w-full p-4 border rounded-xl" />
+                      <input {...register(`projects.${index}.githubLink`)} placeholder="GitHub URL" className="w-full p-4 border rounded-xl text-gray-900" />
+                      <input {...register(`projects.${index}.liveDemo`)} placeholder="Live Demo URL" className="w-full p-4 border rounded-xl text-gray-900" />
                     </div>
-                    <input {...register(`projects.${index}.techStack`)} placeholder="Tech Stack (comma separated)" className="w-full p-4 border rounded-xl" />
+                    <input {...register(`projects.${index}.techStack`)} placeholder="React, Node.js, MongoDB..." className="w-full p-4 border rounded-xl text-gray-900" />
                     <Button type="button" variant="outline" onClick={() => removeProject(index)}>Remove Project</Button>
                   </div>
                 ))}
@@ -188,11 +194,11 @@ const EditPortfolio = () => {
                 {experienceFields.map((field, index) => (
                   <div key={field.id} className="border p-6 rounded-2xl bg-gray-50 space-y-4">
                     <div className="grid md:grid-cols-2 gap-4">
-                      <input {...register(`experience.${index}.company`)} placeholder="Company" className="w-full p-4 border rounded-xl" />
-                      <input {...register(`experience.${index}.role`)} placeholder="Role" className="w-full p-4 border rounded-xl" />
+                      <input {...register(`experience.${index}.company`)} placeholder="Company name" className="w-full p-4 border rounded-xl text-gray-900" />
+                      <input {...register(`experience.${index}.role`)} placeholder="Job title" className="w-full p-4 border rounded-xl text-gray-900" />
                     </div>
-                    <input {...register(`experience.${index}.duration`)} placeholder="Duration" className="w-full p-4 border rounded-xl" />
-                    <textarea {...register(`experience.${index}.description`)} rows={3} placeholder="Description" className="w-full p-4 border rounded-xl" />
+                    <input {...register(`experience.${index}.duration`)} placeholder="e.g., Jan 2023 - Present" className="w-full p-4 border rounded-xl text-gray-900" />
+                    <textarea {...register(`experience.${index}.description`)} rows={3} placeholder="Describe your responsibilities and achievements" className="w-full p-4 border rounded-xl text-gray-900" />
                     <Button type="button" variant="outline" onClick={() => removeExperience(index)}>Remove</Button>
                   </div>
                 ))}
@@ -213,7 +219,7 @@ const EditPortfolio = () => {
               <Button 
                 type="button"
                 variant="outline"
-                onClick={() => navigate(`/${username}`)}
+                onClick={() => navigate(`/portfolio/${username}`)}
                 className="flex-1 py-4 text-lg font-bold rounded-2xl"
               >
                 View Live Profile

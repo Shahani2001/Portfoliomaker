@@ -7,48 +7,83 @@ import { Plus, FileText, Briefcase, Star, Settings, Edit3, Save, X, Edit, Users 
 import { useQuery } from '@tanstack/react-query';
 import ApiClient from '../utils/api';
 
+const normalizeSkills = (skills) => {
+  if (Array.isArray(skills)) return skills.join(', ');
+  if (typeof skills === 'string') return skills;
+  return '';
+};
+
+const toSkillArray = (skills) => {
+  if (Array.isArray(skills)) {
+    return skills.map((skill) => String(skill).trim()).filter(Boolean);
+  }
+
+  if (typeof skills === 'string') {
+    return skills
+      .split(',')
+      .map((skill) => skill.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+};
+
 const Dashboard = () => {
   const { user, token, logout } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: portfolio, isLoading } = useQuery({
+  const { data: portfolioData, isLoading } = useQuery({
     queryKey: ['portfolio', user?.username],
     queryFn: async () => {
       const api = new ApiClient(token);
-      return api.get(`/portfolio/${user.username}`);
+      const response = await api.get(`/portfolio/${user.username}`);
+      return response.portfolio || response;
     },
-    enabled: !!user?.username,
+    enabled: !!user?.username && !!token,
   });
 
+  const portfolio = portfolioData;
+  const skillList = Array.isArray(portfolio?.skills)
+    ? portfolio.skills
+    : typeof portfolio?.skills === 'string'
+      ? portfolio.skills.split(',').map((skill) => skill.trim()).filter(Boolean)
+      : [];
+
   const [editing, setEditing] = React.useState(false);
-  const [editForm, setEditForm] = React.useState({ bio: portfolio?.bio || '', skills: portfolio?.skills || '' });
+  const [editForm, setEditForm] = React.useState({ bio: portfolio?.bio || '', skills: normalizeSkills(portfolio?.skills) });
 
   const handleEdit = () => {
     setEditing(true);
   };
 
   const handleShow = () => {
-    window.location.href = `/${user?.username}`;
+    window.location.href = `/portfolio/${user?.username}`;
   };
 
   const handleSave = async () => {
     try {
-      const api = new ApiClient();
-      await api.put(`/portfolio/${user.username}`, editForm);
+      const api = new ApiClient(token);
+      const payload = {
+        ...editForm,
+        skills: toSkillArray(editForm.skills),
+      };
+
+      await api.put(`/portfolio/${user.username}`, payload);
       queryClient.invalidateQueries({ queryKey: ['portfolio', user?.username] });
       setEditing(false);
     } catch (error) {
       console.error('Update failed', error);
+      alert('Failed to save changes. Please try again.');
     }
   };
 
   const handleCancel = () => {
     setEditing(false);
-    setEditForm({ bio: portfolio?.bio || '', skills: portfolio?.skills || '' });
+    setEditForm({ bio: portfolio?.bio || '', skills: normalizeSkills(portfolio?.skills) });
   };
 
   React.useEffect(() => {
-    setEditForm({ bio: portfolio?.bio || '', skills: portfolio?.skills || '' });
+    setEditForm({ bio: portfolio?.bio || '', skills: normalizeSkills(portfolio?.skills) });
   }, [portfolio]);
 
   if (isLoading) {
@@ -64,10 +99,10 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-12 border-b border-gray-200">
         <div>
-          <h1 className="text-4xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent dark:from-white dark:to-gray-300">
             Dashboard
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 mt-2 dark:text-gray-400">
             Manage your portfolio, {user?.fullName}
           </p>
         </div>
@@ -205,11 +240,15 @@ const Dashboard = () => {
         <div className="p-8 rounded-3xl bg-gradient-to-br from-indigo-50 border-2 border-indigo-200/50 shadow-xl">
           <h3 className="text-2xl font-bold text-indigo-900 mb-4">Skills Preview</h3>
           <div className="flex flex-wrap gap-2">
-            {editForm.skills.split(',').map((skill, idx) => (
-              <span key={idx} className="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm rounded-full font-medium">
-                {skill.trim()}
-              </span>
-            ))}
+            {skillList.length > 0 ? (
+              skillList.map((skill, idx) => (
+                <span key={idx} className="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm rounded-full font-medium">
+                  {typeof skill === 'string' ? skill.trim() : skill}
+                </span>
+              ))
+            ) : (
+              <p className="text-gray-600">No skills added yet.</p>
+            )}
           </div>
         </div>
       </div>

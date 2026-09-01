@@ -7,13 +7,16 @@ import ApiClient from '../utils/api';
 const Profile = () => {
   const { username } = useParams();
 
-  const { data: portfolio, isLoading, error } = useQuery({
+  const { data: portfolioData, isLoading, error } = useQuery({
     queryKey: ['profile', username],
     queryFn: async () => {
       const api = new ApiClient();
-      return api.get(`/portfolio/${username}`);
+      const response = await api.get(`/portfolio/${username}`);
+      return response.portfolio || response;
     },
   });
+
+  const portfolio = portfolioData;
 
   if (isLoading) {
     return (
@@ -91,12 +94,21 @@ const Profile = () => {
             )}
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Link
-              to="/register"
-              className="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl hover:from-indigo-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transition-all h-16 flex items-center justify-center"
-            >
-Hire {portfolio.fullName ? portfolio.fullName.split(' ')[0] || 'Developer' : 'Developer'}
-            </Link>
+            {portfolio.contact?.email ? (
+              <a
+                href={`mailto:${portfolio.contact.email}`}
+                className="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl hover:from-indigo-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transition-all h-16 flex items-center justify-center"
+              >
+                Hire {portfolio.fullName ? portfolio.fullName.split(' ')[0] || 'Developer' : 'Developer'}
+              </a>
+            ) : (
+              <Link
+                to="/"
+                className="px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl hover:from-indigo-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transition-all h-16 flex items-center justify-center"
+              >
+                Hire {portfolio.fullName ? portfolio.fullName.split(' ')[0] || 'Developer' : 'Developer'}
+              </Link>
+            )}
             {portfolio.contact?.github && (
               <Link
                 to={portfolio.contact.github}
@@ -220,13 +232,13 @@ Hire {portfolio.fullName ? portfolio.fullName.split(' ')[0] || 'Developer' : 'De
                     <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-indigo-600 transition-colors">{project.title}</h3>
                     <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed">{project.description}</p>
                     <div className="flex items-center gap-6 text-sm">
-                      {project.demoUrl && (
-                        <Link to={project.demoUrl} className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold">
+                      {project.liveDemo && (
+                        <Link to={project.liveDemo} className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold">
                           Live Demo →
                         </Link>
                       )}
-                      {project.githubUrl && (
-                        <Link to={project.githubUrl} className="flex items-center gap-2 text-gray-700 hover:text-indigo-600">
+                      {project.githubLink && (
+                        <Link to={project.githubLink} className="flex items-center gap-2 text-gray-700 hover:text-indigo-600">
                           GitHub
                         </Link>
                       )}

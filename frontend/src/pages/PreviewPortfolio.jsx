@@ -21,25 +21,32 @@ const PreviewPortfolio = () => {
   }, []);
 
   const handlePublish = async () => {
-    if (!previewData || !user?.username) {
-      alert('No data to publish or user not logged in');
+    if (!previewData) {
+      alert('No data to publish');
+      return;
+    }
+
+    if (!previewData.username) {
+      alert('Username is required');
       return;
     }
 
     try {
-      // Use user's username or generate from fullName
-      const username = user.username || previewData.fullName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-      
       await api.post('/portfolio', {
         ...previewData,
-        username: username.toLowerCase(),
+        username: previewData.username.toLowerCase(),
       });
 
       sessionStorage.removeItem('portfolioPreviewData');
-      navigate(`/${username}`);
+      alert('✅ Portfolio published successfully!');
+      navigate(`/portfolio/${previewData.username.toLowerCase()}`);
     } catch (error) {
       console.error('Publish failed:', error);
-      alert('Failed to publish portfolio. Username may already exist.');
+      if (error.message.includes('Username') || error.message.includes('already')) {
+        alert('❌ Username already exists. Please choose a different username.');
+      } else {
+        alert('❌ Failed to publish portfolio. Please try again.');
+      }
     }
   };
 
@@ -80,7 +87,7 @@ const PreviewPortfolio = () => {
             Portfolio Preview
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            This is how your portfolio will look like. Click publish to make it live at <strong>/{user?.username || 'yourusername'}</strong>
+            This is how your portfolio will look like. Click publish to make it live at <strong>/portfolio/{user?.username || 'yourusername'}</strong>
           </p>
         </div>
 
