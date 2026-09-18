@@ -1,4 +1,5 @@
 import UserPortfolio from "../models/portfoliomodel.js";
+import User from "../models/usermodel.js";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -91,10 +92,22 @@ export async function register(req, res) {
 
         const token = jwt.sign({ userId: newPortfolio._id }, getJwtSecret(), { expiresIn: TOKEN_EXPIRES_IN });
 
+        const userPayload = {
+            id: newPortfolio._id,
+            username: newPortfolio.username,
+            fullName: newPortfolio.fullName,
+            title: newPortfolio.title,
+            bio: newPortfolio.bio,
+            profileImage: newPortfolio.profileImage,
+            contact: newPortfolio.contact,
+            skills: newPortfolio.skills,
+        };
+
         return res.status(201).json({
             success: true,
             message: "User registered successfully (dual save: portfolio + auth)",
             token,
+            user: userPayload,
             portfolio: {
                 id: newPortfolio._id,
                 username: newPortfolio.username,
