@@ -97,12 +97,12 @@ npm run dev # http://localhost:5173
 ```
 
 ## 🚀 Deployment
-- **Frontend**: [Vercel/Netlify](https://69d71bc4b18e3788ad55d4cb--majestic-macaron-4e9f5d.netlify.app/)
-- **Backend**: Render/Railway
+- **Frontend**: [Vercel](https://portfoliomaker-ivory.vercel.app/)
+- **Backend**: [Railway](https://portfoliomaker-production-2772.up.railway.app/)
 - **Database**: MongoDB Atlas
 
 ## 🔮 Future
-- [ ] Dark/Light theme toggle
+- [x] Dark/Light theme toggle
 - [ ] Portfolio analytics/views
 - [ ] Drag & drop projects
 - [ ] Resume PDF upload (Cloudinary)
